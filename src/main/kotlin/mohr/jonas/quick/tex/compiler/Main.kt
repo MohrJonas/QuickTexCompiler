@@ -32,6 +32,7 @@ fun main(args: Array<String>) {
         DirectoryWatcher.builder().path(srcDirectoryPath).listener {
             when (it.eventType()) {
                 DirectoryChangeEvent.EventType.MODIFY, DirectoryChangeEvent.EventType.CREATE -> {
+                    if(it.path().extension != "kts") return@listener
                     println("${it.path().absolutePathString()} changed. Recompiling...")
                     runScript(it.path()).compile(
                         outDirectoryPath,
