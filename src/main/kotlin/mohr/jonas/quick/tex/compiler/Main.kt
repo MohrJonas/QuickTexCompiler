@@ -25,11 +25,25 @@ fun main(args: Array<String>) {
     val outDirectory by parser.option(ArgType.String, "out", "o", "Output directory").required()
     val tectonicPath by parser.option(ArgType.String, "tectonic", "t", "Tectonic path").default("/usr/bin/tectonic")
     val watch by parser.option(ArgType.Boolean, "watch", "w", "Watch for change in the source directory").default(false)
+    val polling by parser.option(ArgType.Boolean, "poll", "p", "Use polling rather than filesystem events").default(false)
     parser.parse(args)
     val (srcDirectoryPath, outDirectoryPath) = validatePaths(srcDirectory, outDirectory, tectonicPath)
     if (watch) {
         println("Watching for changes in ${srcDirectoryPath.absolutePathString()}")
-        DirectoryWatcher.builder().path(srcDirectoryPath).listener {
+        if(polling) {
+            val fileMap = mutableMapOf<Path, String>()
+            while (true) {
+                srcDirectoryPath.walk().forEach {
+                    if(it.extension != "kts") return@forEach
+                    if(!fileMap.containsKey(it) || fileMap[it] != it.readText()) {
+                        fileMap[it] = it.readText()
+                        runScript(it)
+                    }
+                }
+                Thread.sleep(1000L)
+            }
+        }
+        else DirectoryWatcher.builder().path(srcDirectoryPath).listener {
             when (it.eventType()) {
                 DirectoryChangeEvent.EventType.MODIFY, DirectoryChangeEvent.EventType.CREATE -> {
                     if(it.path().extension != "kts") return@listener
