@@ -1,0 +1,27 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Build and run docker image" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="nastygamer/quicktexcompiler:dev" />
+        <option name="containerName" value="QuickTexCompiler-Dev" />
+        <option name="commandLineOptions" value="--rm" />
+        <option name="sourceFilePath" value="Dockerfile" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/src" />
+              <option name="hostPath" value="$PROJECT_DIR$\src" />
+              <option name="readOnly" value="true" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/out" />
+              <option name="hostPath" value="$PROJECT_DIR$\out" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl />
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>

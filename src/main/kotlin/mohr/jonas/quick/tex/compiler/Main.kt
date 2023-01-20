@@ -36,8 +36,13 @@ fun main(args: Array<String>) {
                 srcDirectoryPath.walk().forEach {
                     if(it.extension != "kts") return@forEach
                     if(!fileMap.containsKey(it) || fileMap[it] != it.readText()) {
+                        println("${it.absolutePathString()} changed. Recompiling...")
                         fileMap[it] = it.readText()
-                        runScript(it)
+                        runScript(it).compile(
+                            outDirectoryPath,
+                            it.nameWithoutExtension,
+                            Path.of(tectonicPath)
+                        )
                     }
                 }
                 Thread.sleep(1000L)
